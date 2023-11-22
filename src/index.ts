@@ -1,3 +1,2 @@
-import { Add } from './Add.js';
-
-export { Add };
+import { Doot } from './Doot';
+export { Doot };
