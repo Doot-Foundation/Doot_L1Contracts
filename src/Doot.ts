@@ -5,19 +5,28 @@ import {
   MerkleMapWitness,
   State,
   state,
-  CircuitString,
 } from 'o1js';
 
+import { MultiPackedStringFactory } from 'o1js-pack';
+
+export class IpfsCID extends MultiPackedStringFactory(4) {}
+
 export class Doot extends SmartContract {
-  /// Merkle Map Root to make sure the values are valid.
-  @state(Field) mapRoot = State<Field>();
-  /// IPFS hash of the off-chain file while holds the asset price info for the past hour.
-  @state(CircuitString) ipfsHash = State<CircuitString>();
+  /// @notice Merkle Map Root to make sure the values are valid.
+  @state(Field) commitment = State<Field>();
+
+  /// @notice IPFS URL of the off-chain file which holds the asset price info upto the past 2 hours.
+  /// @notice The historical data and latest data is separated.
+  @state(IpfsCID) ipfsCID = State<IpfsCID>();
+
+  /// @notice Timestamp to identify when the last changes were done.
+  @state(Field) latestChangedAt = State<Field>();
 
   @method init() {
-    const initialRoot = Field.from(0);
-    this.mapRoot.set(initialRoot);
-    this.ipfsHash.set(CircuitString.fromString('ipfs://'));
+    super.init();
+
+    this.commitment.set(Field.from(0));
+    this.ipfsCID.set(IpfsCID.fromString('ipfs://'));
   }
 
   @method update(
@@ -25,37 +34,35 @@ export class Doot extends SmartContract {
     keyToChange: Field,
     valueBefore: Field,
     valueToChange: Field,
-    updatedHash: CircuitString
+    updatedCID: IpfsCID
   ) {
-    const initialRoot = this.mapRoot.get();
-    this.mapRoot.assertEquals(initialRoot);
+    const currentCommitment = this.commitment.get();
+    this.commitment.assertEquals(currentCommitment);
 
-    // check the initial state matches what we expect
-    const [rootBefore, key] = keyWitness.computeRootAndKey(valueBefore);
-    rootBefore.assertEquals(initialRoot);
+    const currentCID = this.ipfsCID.get();
+    this.ipfsCID.assertEquals(currentCID);
+
+    const [previousCommitment, key] = keyWitness.computeRootAndKey(valueBefore);
+    previousCommitment.assertEquals(currentCommitment);
     key.assertEquals(keyToChange);
 
-    // compute the root after incrementing
-    const [rootAfter, _] = keyWitness.computeRootAndKey(valueToChange);
+    const updatedCommitment = keyWitness.computeRootAndKey(valueToChange)[0];
 
-    // set the new root
-    this.mapRoot.set(rootAfter);
-    this.ipfsHash.set(updatedHash);
+    this.latestChangedAt.set(Field.from(Date.now()));
+    this.commitment.set(updatedCommitment);
+    this.ipfsCID.set(updatedCID);
   }
 
-  @method insert(
-    keyToAdd: Field,
-    keyWitness: MerkleMapWitness,
-    valueToAdd: Field,
-    updatedHash: CircuitString
-  ) {
-    const initialRoot = this.mapRoot.get();
-    this.mapRoot.assertEquals(initialRoot);
+  /// @dev Only to be used in case of desperate circumstances.
+  @method setBase(commitment: Field, ipfsCID: IpfsCID) {
+    const currentCommitment = this.commitment.get();
+    this.commitment.assertEquals(currentCommitment);
 
-    const [rootAfter, key] = keyWitness.computeRootAndKey(valueToAdd);
-    key.assertEquals(keyToAdd);
+    const initialIpfsCID = this.ipfsCID.get();
+    this.ipfsCID.assertEquals(initialIpfsCID);
 
-    this.mapRoot.set(rootAfter);
-    this.ipfsHash.set(updatedHash);
+    this.latestChangedAt.set(Field.from(Date.now()));
+    this.commitment.set(commitment);
+    this.ipfsCID.set(ipfsCID);
   }
 }
