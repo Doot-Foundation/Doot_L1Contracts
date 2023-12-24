@@ -1,5 +1,5 @@
 {
-  "name": "l1contracts",
+  "name": "doot_mina_contracts",
   "version": "0.1.0",
   "description": "",
   "author": "",
@@ -25,6 +25,7 @@
   "devDependencies": {
     "@babel/preset-env": "^7.16.4",
     "@babel/preset-typescript": "^7.16.0",
+    "@types/dotenv": "^8.2.0",
     "@types/jest": "^27.0.3",
     "@typescript-eslint/eslint-plugin": "^5.5.0",
     "@typescript-eslint/parser": "^5.5.0",
@@ -37,5 +38,9 @@
   },
   "peerDependencies": {
     "o1js": "0.14.*"
+  },
+  "dependencies": {
+    "dotenv": "^16.3.1",
+    "o1js-pack": "^0.4.3"
   }
 }
