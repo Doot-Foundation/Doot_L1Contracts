@@ -46,12 +46,12 @@ describe('Doot.js', () => {
   });
 
   describe('Init', () => {
-    it('Should set initial ipfs hash to ipfs://', async () => {
+    it("Should set initial ipfs hash to ''", async () => {
       const onChainIpfsCID = dootZkApp.ipfsCID.get();
       const onChainIpfsCid = IpfsCID.fromCharacters(
         IpfsCID.unpack(onChainIpfsCID.packed)
       );
-      const expected = 'ipfs://';
+      const expected = '';
       expect(onChainIpfsCid.toString()).toEqual(expected);
     });
 

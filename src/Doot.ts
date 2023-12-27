@@ -5,7 +5,6 @@ import {
   MerkleMapWitness,
   State,
   state,
-  UInt64,
 } from 'o1js';
 
 import { MultiPackedStringFactory } from 'o1js-pack';
@@ -20,14 +19,8 @@ export class Doot extends SmartContract {
   /// @notice The historical data and latest data is separated.
   @state(IpfsCID) ipfsCID = State<IpfsCID>();
 
-  /// @notice Timestamp to identify when the last changes were done.
-  @state(UInt64) latestChangedAt = State<UInt64>();
-
   @method init() {
     super.init();
-
-    this.commitment.set(Field.from(0));
-    this.ipfsCID.set(IpfsCID.fromString('ipfs://'));
   }
 
   @method update(
@@ -43,17 +36,12 @@ export class Doot extends SmartContract {
     const currentCID = this.ipfsCID.get();
     this.ipfsCID.assertEquals(currentCID);
 
-    this.network.globalSlotSinceGenesis.assertEquals(
-      this.network.globalSlotSinceGenesis.get()
-    );
-
     const [previousCommitment, key] = keyWitness.computeRootAndKey(valueBefore);
     previousCommitment.assertEquals(currentCommitment);
     key.assertEquals(keyToChange);
 
     const updatedCommitment = keyWitness.computeRootAndKey(valueToChange)[0];
 
-    this.latestChangedAt.set(this.network.timestamp.get());
     this.commitment.set(updatedCommitment);
     this.ipfsCID.set(updatedCID);
   }
@@ -61,14 +49,9 @@ export class Doot extends SmartContract {
   /// @dev
   @method setBase(updatedCommitment: Field, updatedIpfsCID: IpfsCID) {
     const currentCommitment = this.commitment.get();
-
     this.commitment.assertEquals(currentCommitment);
-    this.network.globalSlotSinceGenesis.assertEquals(
-      this.network.globalSlotSinceGenesis.get()
-    );
     this.ipfsCID.getAndAssertEquals();
 
-    this.latestChangedAt.set(this.network.timestamp.get());
     this.commitment.set(updatedCommitment);
     this.ipfsCID.set(updatedIpfsCID);
   }
