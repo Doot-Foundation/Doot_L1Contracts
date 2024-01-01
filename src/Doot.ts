@@ -46,7 +46,6 @@ export class Doot extends SmartContract {
     this.ipfsCID.set(updatedCID);
   }
 
-  /// @dev
   @method setBase(updatedCommitment: Field, updatedIpfsCID: IpfsCID) {
     const currentCommitment = this.commitment.get();
     this.commitment.assertEquals(currentCommitment);
