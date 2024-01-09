@@ -5,6 +5,9 @@ import {
   MerkleMapWitness,
   State,
   state,
+  PublicKey,
+  Signature,
+  Poseidon,
 } from 'o1js';
 
 import { MultiPackedStringFactory } from 'o1js-pack';
@@ -19,8 +22,13 @@ export class Doot extends SmartContract {
   /// @notice The historical data and latest data is separated.
   @state(IpfsCID) ipfsCID = State<IpfsCID>();
 
+  @state(PublicKey) oraclePublicKey = State<PublicKey>();
+
+  @state(Field) secretToken = State<Field>();
+
   @method init() {
     super.init();
+    this.oraclePublicKey.set(this.sender);
   }
 
   @method update(
@@ -28,13 +36,23 @@ export class Doot extends SmartContract {
     keyToChange: Field,
     valueBefore: Field,
     valueToChange: Field,
-    updatedCID: IpfsCID
+    updatedCID: IpfsCID,
+    secret: Field
   ) {
+    const currentSecretToken = this.secretToken.get();
+    this.secretToken.assertEquals(currentSecretToken);
+
+    const currentOracle = this.oraclePublicKey.get();
+    this.oraclePublicKey.assertEquals(currentOracle);
+
     const currentCommitment = this.commitment.get();
     this.commitment.assertEquals(currentCommitment);
 
     const currentCID = this.ipfsCID.get();
     this.ipfsCID.assertEquals(currentCID);
+
+    const sentSecret = Poseidon.hash([secret]);
+    this.secretToken.assertEquals(sentSecret);
 
     const [previousCommitment, key] = keyWitness.computeRootAndKey(valueBefore);
     previousCommitment.assertEquals(currentCommitment);
@@ -46,12 +64,38 @@ export class Doot extends SmartContract {
     this.ipfsCID.set(updatedCID);
   }
 
-  @method setBase(updatedCommitment: Field, updatedIpfsCID: IpfsCID) {
+  @method setBase(
+    updatedCommitment: Field,
+    updatedIpfsCID: IpfsCID,
+    updatedSecret: Field
+  ) {
+    const currentSecretToken = this.secretToken.get();
+    this.secretToken.assertEquals(currentSecretToken);
+
+    const currentOracle = this.oraclePublicKey.get();
+    this.oraclePublicKey.assertEquals(currentOracle);
+
     const currentCommitment = this.commitment.get();
     this.commitment.assertEquals(currentCommitment);
-    this.ipfsCID.getAndAssertEquals();
+
+    const currentCID = this.ipfsCID.get();
+    this.ipfsCID.assertEquals(currentCID);
+
+    /// Can only be called once
+    this.secretToken.assertEquals(Field.from(0));
 
     this.commitment.set(updatedCommitment);
     this.ipfsCID.set(updatedIpfsCID);
+    this.secretToken.set(Poseidon.hash([updatedSecret]));
+  }
+
+  @method verify(signature: Signature, Price: Field) {
+    // Get the oracle public key from the contract state
+    const oraclePublicKey = this.oraclePublicKey.get();
+    this.oraclePublicKey.assertEquals(oraclePublicKey);
+    // Evaluate whether the signature is valid for the provided data
+    const validSignature = signature.verify(oraclePublicKey, [Price]);
+    // Check that the signature is valid
+    validSignature.assertTrue();
   }
 }
