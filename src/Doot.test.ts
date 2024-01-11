@@ -98,7 +98,7 @@ describe('Doot.js', () => {
       const updatedCommitment = map.getRoot();
 
       let txn = await Mina.transaction(oracle, () => {
-        dootZkApp.setBase(updatedCommitment, updatedIPFS, secret);
+        dootZkApp.initBase(updatedCommitment, updatedIPFS, secret);
       });
       await txn.prove();
       await txn.sign([oraclePK]).send();
@@ -120,7 +120,7 @@ describe('Doot.js', () => {
 
       try {
         txn = await Mina.transaction(oracle, () => {
-          dootZkApp.setBase(updatedCommitment, updatedIPFS, secret);
+          dootZkApp.initBase(updatedCommitment, updatedIPFS, secret);
         });
         await txn.prove();
         const signed = txn.sign([oraclePK]);
@@ -147,7 +147,7 @@ describe('Doot.js', () => {
       );
 
       txn = await Mina.transaction(oracle, () => {
-        dootZkApp.update(
+        dootZkApp.updateIndividual(
           minaWitness,
           minaKey,
           minaPrice,
@@ -181,7 +181,7 @@ describe('Doot.js', () => {
 
       try {
         txn = await Mina.transaction(oracle, () => {
-          dootZkApp.update(
+          dootZkApp.updateIndividual(
             minaWitness,
             minaKey,
             updatedPrice,

@@ -31,7 +31,7 @@ export class Doot extends SmartContract {
     this.oraclePublicKey.set(this.sender);
   }
 
-  @method update(
+  @method updateIndividual(
     keyWitness: MerkleMapWitness,
     keyToChange: Field,
     valueBefore: Field,
@@ -64,7 +64,31 @@ export class Doot extends SmartContract {
     this.ipfsCID.set(updatedCID);
   }
 
-  @method setBase(
+  @method updateBase(
+    updatedCommitment: Field,
+    updatedIpfsCID: IpfsCID,
+    secret: Field
+  ) {
+    const currentSecretToken = this.secretToken.get();
+    this.secretToken.assertEquals(currentSecretToken);
+
+    const currentOracle = this.oraclePublicKey.get();
+    this.oraclePublicKey.assertEquals(currentOracle);
+
+    const currentCommitment = this.commitment.get();
+    this.commitment.assertEquals(currentCommitment);
+
+    const currentCID = this.ipfsCID.get();
+    this.ipfsCID.assertEquals(currentCID);
+
+    /// Can only be called once
+    this.secretToken.assertEquals(Poseidon.hash([secret]));
+
+    this.commitment.set(updatedCommitment);
+    this.ipfsCID.set(updatedIpfsCID);
+  }
+
+  @method initBase(
     updatedCommitment: Field,
     updatedIpfsCID: IpfsCID,
     updatedSecret: Field

@@ -123,7 +123,7 @@ let latestIPFSHash: IpfsCID = IpfsCID.fromString(
 const secret: Field = Field.random();
 
 tx = await Mina.transaction(oracle, () => {
-  dootZkApp.setBase(latestCommitment, latestIPFSHash, secret);
+  dootZkApp.initBase(latestCommitment, latestIPFSHash, secret);
 });
 
 await tx.prove();
