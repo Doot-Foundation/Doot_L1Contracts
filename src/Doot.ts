@@ -81,8 +81,8 @@ export class Doot extends SmartContract {
     const currentCID = this.ipfsCID.get();
     this.ipfsCID.assertEquals(currentCID);
 
-    /// Can only be called once
-    this.secretToken.assertEquals(Poseidon.hash([secret]));
+    const sentSecret = Poseidon.hash([secret]);
+    this.secretToken.assertEquals(sentSecret);
 
     this.commitment.set(updatedCommitment);
     this.ipfsCID.set(updatedIpfsCID);

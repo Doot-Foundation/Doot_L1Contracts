@@ -4,9 +4,9 @@
     "berkeley": {
       "url": "https://proxy.berkeley.minaexplorer.com/graphql",
       "keyPath": "keys/berkeley.json",
-      "feepayerKeyPath": "/home/botvenom/.cache/zkapp-cli/keys/deployer.json",
-      "feepayerAlias": "deployer",
-      "fee": "0.1",
+      "feepayerKeyPath": "/home/botvenom/.cache/zkapp-cli/keys/tester.json",
+      "feepayerAlias": "tester",
+      "fee": "1",
       "smartContract": "Doot"
     }
   }
