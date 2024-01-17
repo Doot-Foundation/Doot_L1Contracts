@@ -6,7 +6,8 @@
       "keyPath": "keys/berkeley.json",
       "feepayerKeyPath": "/home/botvenom/.cache/zkapp-cli/keys/deployer.json",
       "feepayerAlias": "deployer",
-      "fee": "0.1"
+      "fee": "1",
+      "smartContract": "Doot"
     }
   }
 }

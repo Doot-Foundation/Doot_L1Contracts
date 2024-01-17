@@ -5,7 +5,9 @@ import {
   MerkleMapWitness,
   State,
   state,
-  UInt64,
+  PublicKey,
+  Signature,
+  Poseidon,
 } from 'o1js';
 
 import { MultiPackedStringFactory } from 'o1js-pack';
@@ -20,32 +22,37 @@ export class Doot extends SmartContract {
   /// @notice The historical data and latest data is separated.
   @state(IpfsCID) ipfsCID = State<IpfsCID>();
 
-  /// @notice Timestamp to identify when the last changes were done.
-  @state(UInt64) latestChangedAt = State<UInt64>();
+  @state(PublicKey) oraclePublicKey = State<PublicKey>();
+
+  @state(Field) secretToken = State<Field>();
 
   @method init() {
     super.init();
-
-    this.commitment.set(Field.from(0));
-    this.ipfsCID.set(IpfsCID.fromString('ipfs://'));
+    this.oraclePublicKey.set(this.sender);
   }
 
-  @method update(
+  @method updateIndividual(
     keyWitness: MerkleMapWitness,
     keyToChange: Field,
     valueBefore: Field,
     valueToChange: Field,
-    updatedCID: IpfsCID
+    updatedCID: IpfsCID,
+    secret: Field
   ) {
+    const currentOracle = this.oraclePublicKey.get();
+    this.oraclePublicKey.assertEquals(currentOracle);
+
+    const currentSecretToken = this.secretToken.get();
+    this.secretToken.assertEquals(currentSecretToken);
+
     const currentCommitment = this.commitment.get();
     this.commitment.assertEquals(currentCommitment);
 
     const currentCID = this.ipfsCID.get();
     this.ipfsCID.assertEquals(currentCID);
 
-    this.network.globalSlotSinceGenesis.assertEquals(
-      this.network.globalSlotSinceGenesis.get()
-    );
+    const sentSecret = Poseidon.hash([secret]);
+    this.secretToken.assertEquals(sentSecret);
 
     const [previousCommitment, key] = keyWitness.computeRootAndKey(valueBefore);
     previousCommitment.assertEquals(currentCommitment);
@@ -53,23 +60,66 @@ export class Doot extends SmartContract {
 
     const updatedCommitment = keyWitness.computeRootAndKey(valueToChange)[0];
 
-    this.latestChangedAt.set(this.network.timestamp.get());
     this.commitment.set(updatedCommitment);
     this.ipfsCID.set(updatedCID);
   }
 
-  /// @dev
-  @method setBase(updatedCommitment: Field, updatedIpfsCID: IpfsCID) {
+  @method updateBase(
+    updatedCommitment: Field,
+    updatedIpfsCID: IpfsCID,
+    secret: Field
+  ) {
+    const currentSecretToken = this.secretToken.get();
+    this.secretToken.assertEquals(currentSecretToken);
+
+    const currentOracle = this.oraclePublicKey.get();
+    this.oraclePublicKey.assertEquals(currentOracle);
+
     const currentCommitment = this.commitment.get();
-
     this.commitment.assertEquals(currentCommitment);
-    this.network.globalSlotSinceGenesis.assertEquals(
-      this.network.globalSlotSinceGenesis.get()
-    );
-    this.ipfsCID.getAndAssertEquals();
 
-    this.latestChangedAt.set(this.network.timestamp.get());
+    const currentCID = this.ipfsCID.get();
+    this.ipfsCID.assertEquals(currentCID);
+
+    const sentSecret = Poseidon.hash([secret]);
+    this.secretToken.assertEquals(sentSecret);
+
     this.commitment.set(updatedCommitment);
     this.ipfsCID.set(updatedIpfsCID);
+  }
+
+  @method initBase(
+    updatedCommitment: Field,
+    updatedIpfsCID: IpfsCID,
+    updatedSecret: Field
+  ) {
+    const currentSecretToken = this.secretToken.get();
+    this.secretToken.assertEquals(currentSecretToken);
+
+    const currentOracle = this.oraclePublicKey.get();
+    this.oraclePublicKey.assertEquals(currentOracle);
+
+    const currentCommitment = this.commitment.get();
+    this.commitment.assertEquals(currentCommitment);
+
+    const currentCID = this.ipfsCID.get();
+    this.ipfsCID.assertEquals(currentCID);
+
+    /// Can only be called once
+    this.secretToken.assertEquals(Field.from(0));
+
+    this.commitment.set(updatedCommitment);
+    this.ipfsCID.set(updatedIpfsCID);
+    this.secretToken.set(Poseidon.hash([updatedSecret]));
+  }
+
+  @method verify(signature: Signature, Price: Field) {
+    // Get the oracle public key from the contract state
+    const oraclePublicKey = this.oraclePublicKey.get();
+    this.oraclePublicKey.assertEquals(oraclePublicKey);
+    // Evaluate whether the signature is valid for the provided data
+    const validSignature = signature.verify(oraclePublicKey, [Price]);
+    // Check that the signature is valid
+    validSignature.assertTrue();
   }
 }
