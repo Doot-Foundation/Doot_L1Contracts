@@ -39,11 +39,11 @@ export class Doot extends SmartContract {
     updatedCID: IpfsCID,
     secret: Field
   ) {
-    const currentSecretToken = this.secretToken.get();
-    this.secretToken.assertEquals(currentSecretToken);
-
     const currentOracle = this.oraclePublicKey.get();
     this.oraclePublicKey.assertEquals(currentOracle);
+
+    const currentSecretToken = this.secretToken.get();
+    this.secretToken.assertEquals(currentSecretToken);
 
     const currentCommitment = this.commitment.get();
     this.commitment.assertEquals(currentCommitment);
