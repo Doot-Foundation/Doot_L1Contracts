@@ -18,51 +18,16 @@ async function frameKey(key: CircuitString) {
   return Poseidon.hash(key.toFields());
 }
 
-// async function getAndUpdateIPFSData() {
-//   try {
-//     const response = await axios.get(url);
-//     const data = response.data; // Assuming the fetched data is in the form of an object
-
-//     // Append fetched data to the end of 'historical'
-//     data.historical = {
-//       ...data.historical,
-//       ...data.latest,
-//     };
-
-//     data.latest = {
-//       currentTimestamp: {
-//         price,
-//         decimal,
-//         lastUpdated,
-//         signature,
-//         active,
-//         urls,
-//         prices,
-//         signatures,
-//         tlsnProofs,
-//         l1MerkleMapWitness,
-//       },
-//     };
-
-//     console.log('Updated data:', data);
-//   } catch (error) {
-//     console.error('Error fetching data:', error);
-//   }
-// }
-
 const doProofs = false;
 
 let Local = Mina.LocalBlockchain({ proofsEnabled: doProofs });
 Mina.setActiveInstance(Local);
-// let initialBalance = 10_000_000_000;
 
 let oraclePK = Local.testAccounts[0].privateKey;
 let oracle = oraclePK.toPublicKey();
 
 let zkappKey = PrivateKey.random();
 let zkappAddress = zkappKey.toPublicKey();
-
-// let lighouseKey = process.env.LIGHTHOUSE_KEY;
 
 let minaKey = await frameKey(CircuitString.fromString('Mina'));
 let bitcoinKey = await frameKey(CircuitString.fromString('Bitcoin'));
@@ -98,12 +63,6 @@ console.log('\nDeploying Doot...');
 if (doProofs) {
   await Doot.compile();
 }
-
-/*
-`txn.send()` returns a promise with two closures - `.wait()` and `.hash()`
-`.hash()` returns the transaction hash, as the name might indicate
-`.wait()` automatically resolves once the transaction has been included in a block. this is redundant for the LocalBlockchain, but very helpful for live testnets
-*/
 
 let tx = await Mina.transaction(oracle, () => {
   AccountUpdate.fundNewAccount(oracle);
