@@ -1,6 +1,3 @@
-import dotenv from 'dotenv';
-dotenv.config();
-
 import { Doot, IpfsCID } from './Doot.js';
 
 import {
