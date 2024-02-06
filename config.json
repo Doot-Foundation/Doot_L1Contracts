@@ -2,11 +2,12 @@
   "version": 1,
   "deployAliases": {
     "berkeley": {
-      "url": "https://proxy.berkeley.minaexplorer.com/graphql",
+      "networkId": "testnet",
+      "url": "https://api.minascan.io/node/berkeley/v1/graphql",
       "keyPath": "keys/berkeley.json",
-      "feepayerKeyPath": "/home/botvenom/.cache/zkapp-cli/keys/deployer.json",
-      "feepayerAlias": "deployer",
-      "fee": "1",
+      "feepayerKeyPath": "/home/botvenom/.cache/zkapp-cli/keys/oracle.json",
+      "feepayerAlias": "oracle",
+      "fee": "0.1",
       "smartContract": "Doot"
     }
   }

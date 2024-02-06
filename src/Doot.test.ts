@@ -112,8 +112,6 @@ describe('Doot.js', () => {
       const onChainCommitment = dootZkApp.commitment.get();
       const onChainSecret = dootZkApp.secretToken.get();
 
-      console.log('INITIAL VALUES --->>>');
-      console.log(onChainIpfsCid.toString(), onChainCommitment.toBigInt());
       expect(onChainIpfsCid.toString()).toEqual(expectedIpfsCid);
       expect(onChainCommitment).toEqual(updatedCommitment);
       expect(onChainSecret).toEqual(Poseidon.hash([secret]));
