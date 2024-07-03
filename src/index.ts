@@ -1,2 +1,4 @@
 import { Doot } from './Doot';
-export { Doot };
+import { Registry } from './Registry';
+
+export { Doot, Registry };

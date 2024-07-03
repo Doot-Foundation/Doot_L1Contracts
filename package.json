@@ -19,6 +19,8 @@
     "coverage": "node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage",
     "format": "prettier --write --ignore-unknown **/*",
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
+    "test:doot": "node --experimental-vm-modules node_modules/jest/bin/jest.js Doot.test.ts",
+    "test:registry": "node --experimental-vm-modules node_modules/jest/bin/jest.js Registry.test.ts",
     "testw": "node --experimental-vm-modules node_modules/jest/bin/jest.js --watch",
     "lint": "npx eslint src/* --fix"
   },
@@ -34,11 +36,12 @@
     "jest": "^27.3.1",
     "prettier": "^2.3.2",
     "ts-jest": "^27.0.7",
-    "typescript": "^4.7.2"
+    "typescript": "5.1"
   },
   "dependencies": {
     "dotenv": "^16.3.1",
-    "o1js": "^0.16.0",
-    "o1js-pack": "^0.5.1"
-  }
+    "o1js": "^1.4.0",
+    "o1js-pack": "^0.7.0"
+  },
+  "packageManager": "yarn@1.22.21+sha1.1959a18351b811cdeedbd484a8f86c3cc3bbaf72"
 }
