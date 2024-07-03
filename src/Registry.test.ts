@@ -11,9 +11,7 @@ import { Registry, SourceCodeIPFS, SourceCodeGithub } from './Registry';
 
 describe('Registry', () => {
   let deployer: PublicKey;
-
   let deployerPK: PrivateKey;
-
   let zkAppAddress: PublicKey;
   let zkAppPrivateKey: PrivateKey;
   let registry: Registry;

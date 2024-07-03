@@ -130,7 +130,7 @@ describe('Doot.js', () => {
       dogePrice = Field.from(1261024335);
     });
 
-    it('Should add an asset called Mina and update the (BASE) commitment + IPFS hash + secret and fail the next time irrespective of the inputs.', async () => {
+    it('Should init the (BASE) commitment, IPFS hash, secret and prices. Fail the next time irrespective of the inputs.', async () => {
       map.set(minaKey, minaPrice);
       map.set(bitcoinKey, bitcoinPrice);
       map.set(chainlinkKey, chainlinkPrice);
@@ -156,8 +156,6 @@ describe('Doot.js', () => {
           dogePrice,
         ],
       });
-
-      console.log(typeof prices);
 
       const updatedIPFS = IpfsCID.fromString(
         'QmQy34PrqnoCBZySFAkRsC9q5BSFESGUxX6X8CQtrNhtrB'
@@ -207,7 +205,7 @@ describe('Doot.js', () => {
         );
       }
     });
-    it('Should update an existing asset called Mina including the base root + IPFS hash only if the secret is known.', async () => {
+    it('Should update the storage only if the secret is known.', async () => {
       const updatedIPFS = IpfsCID.fromString(
         'QmQy34PrqnoCBZySFAkRsC9q5BSFESGUxX6X8CQtr11110'
       );
@@ -233,15 +231,21 @@ describe('Doot.js', () => {
       const onChainCommitment = dootZkApp.commitment.get();
       expect(onChainCommitment != updatedCommitment);
 
-      // ----------------
+      await Mina.transaction(oracle, async () => {
+        await dootZkApp.update(updatedCommitment, updatedIPFS, prices, secret);
+      })
+        .prove()
+        .sign([oraclePK])
+        .send();
 
+      // ----------------
       try {
         await Mina.transaction(oracle, async () => {
           await dootZkApp.update(
             updatedCommitment,
             updatedIPFS,
             prices,
-            secret
+            Field.random()
           );
         })
           .prove()
