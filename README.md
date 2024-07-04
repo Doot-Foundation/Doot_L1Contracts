@@ -1,26 +1,24 @@
-# Mina zkApp: L1contracts
+# Doot L1 Mina Smart Contract
 
-This template uses TypeScript.
+This repository is responsible for tracking all the smart contracts under Doot - Data Feeds Oracle for Mina Protocol.
 
-## How to build
+## Registry.ts
 
-```sh
-npm run build
-```
+This contract is used to index the last updated implementation details.
+These include -
 
-## How to run tests
+1. Source code at Github.
+2. Source code pinned at IPFS.
+3. The address of the latest implementation.
 
-```sh
-npm run test
-npm run testw # watch mode
-```
+A developer can refer to this contract regular to check for any changes regarding Doot Data Feeds Smart Contracts.
 
-## How to run coverage
+## Doot.ts
 
-```sh
-npm run coverage
-```
+This contract is at the heart of the protocol. Responsible for bringing the current exchange rate on-chain. ATM updated every 2 hours.
 
-## License
+A developer looking to fetch the exchange rate of one of the tracked cryptocurrencies can call `getPrice(token:CircuitString)` and use it in their smart contracts.
 
-[Apache-2.0](LICENSE)
+## AggregationProgram.ts
+
+This contract is responsible for creating aggregation proof of each asset updates. which enables the aggregation process to be verifiable by nature. Since its a general ZkProgram we employ this directly in our price generation CRON jobs.

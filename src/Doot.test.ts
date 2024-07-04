@@ -21,7 +21,7 @@ describe('Doot.js', () => {
     // setup local blockchain
     let Local = await Mina.LocalBlockchain();
     Mina.setActiveInstance(Local);
-    // Local.testAccounts is an array of 10 test accounts that have been pre-filled with Mina
+    // Local.testAccounts is an prices of 10 test accounts that have been pre-filled with Mina
     oraclePK = Local.testAccounts[0].key;
     oracle = oraclePK.toPublicKey();
 
@@ -143,7 +143,7 @@ describe('Doot.js', () => {
       map.set(polygonKey, polygonPrice);
 
       prices = new PricesArray({
-        array: [
+        prices: [
           minaPrice,
           bitcoinPrice,
           ethereumPrice,
@@ -213,7 +213,7 @@ describe('Doot.js', () => {
       map.set(minaKey, updatedPrice);
 
       prices = new PricesArray({
-        array: [
+        prices: [
           updatedPrice,
           bitcoinPrice,
           ethereumPrice,

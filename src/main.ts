@@ -32,18 +32,6 @@ let rippleKey = CircuitString.fromString('Ripple').hash();
 let dogeKey = CircuitString.fromString('Dogecoin').hash();
 let polygonKey = CircuitString.fromString('Polygon').hash();
 
-console.log('\nKEYS ->');
-console.log(minaKey.toString());
-console.log(bitcoinKey.toString());
-console.log(chainlinkKey.toString());
-console.log(solanaKey.toString());
-console.log(ethereumKey.toString());
-console.log(cardanoKey.toString());
-console.log(avalancheKey.toString());
-console.log(rippleKey.toString());
-console.log(dogeKey.toString());
-console.log(polygonKey.toString());
-
 const Map = new MerkleMap();
 
 let minaPrice = Field.from(5248770935);
@@ -85,7 +73,7 @@ const deployTxn = await Mina.transaction(oracle, async () => {
 await deployTxn.prove();
 await deployTxn.sign([oraclePK, zkappKey]).send();
 
-console.log('\nUpdating base values...');
+console.log('\nInit base values...');
 
 const latestCommitment: Field = Map.getRoot();
 const latestIPFSHash: IpfsCID = IpfsCID.fromString(
@@ -93,11 +81,11 @@ const latestIPFSHash: IpfsCID = IpfsCID.fromString(
 );
 
 const secret: Field = Field.random();
-console.log(secret, secret.toString());
+console.log('\nSECRET :', secret.toString());
 
 // let toAdd = Provable.Array(Field, 10);
 let prices: PricesArray = new PricesArray({
-  array: [
+  prices: [
     minaPrice,
     bitcoinPrice,
     ethereumPrice,
@@ -110,8 +98,6 @@ let prices: PricesArray = new PricesArray({
     dogePrice,
   ],
 });
-
-// .fromValue();
 
 await Mina.transaction(oracle, async () => {
   await dootZkApp.initBase(latestCommitment, latestIPFSHash, prices, secret);
@@ -126,49 +112,53 @@ await Mina.transaction(oracle, () => dootZkApp.settle(proof))
   .sign([oraclePK])
   .send();
 
+let minaPriceOnChain = await dootZkApp.getPrice(
+  CircuitString.fromString('Mina')
+);
+console.log('\nOn-chain Mina Price :', minaPriceOnChain.toString());
+
 const onChainIpfsCID = dootZkApp.ipfsCID.get();
 const ipfsHash = IpfsCID.unpack(onChainIpfsCID.packed)
   .map((x) => x.toString())
   .join('');
 
 console.log(
-  `Review the latest/historical data at: https://ipfs.io/ipfs/${ipfsHash}`
+  `\nReview the latest/historical data at: https://ipfs.io/ipfs/${ipfsHash}`
 );
 
 const minaWitness: MerkleMapWitness = Map.getWitness(minaKey);
-const chainlinkWitness: MerkleMapWitness = Map.getWitness(chainlinkKey);
-const solanaWitness: MerkleMapWitness = Map.getWitness(solanaKey);
-const ethereumWitness: MerkleMapWitness = Map.getWitness(ethereumKey);
-const bitcoinWitness: MerkleMapWitness = Map.getWitness(bitcoinKey);
-const avalanceWitness: MerkleMapWitness = Map.getWitness(avalancheKey);
-const cardanoWitness: MerkleMapWitness = Map.getWitness(cardanoKey);
-const rippleWitness: MerkleMapWitness = Map.getWitness(rippleKey);
+// const chainlinkWitness: MerkleMapWitness = Map.getWitness(chainlinkKey);
+// const solanaWitness: MerkleMapWitness = Map.getWitness(solanaKey);
+// const ethereumWitness: MerkleMapWitness = Map.getWitness(ethereumKey);
+// const bitcoinWitness: MerkleMapWitness = Map.getWitness(bitcoinKey);
+// const avalanceWitness: MerkleMapWitness = Map.getWitness(avalancheKey);
+// const cardanoWitness: MerkleMapWitness = Map.getWitness(cardanoKey);
+// const rippleWitness: MerkleMapWitness = Map.getWitness(rippleKey);
+// const dogeWitness: MerkleMapWitness = Map.getWitness(dogeKey);
 const polygonWitness: MerkleMapWitness = Map.getWitness(polygonKey);
-const dogeWitness: MerkleMapWitness = Map.getWitness(dogeKey);
 
 const [rootMina] = minaWitness.computeRootAndKeyV2(minaPrice);
-const [rootChainlink] = chainlinkWitness.computeRootAndKeyV2(chainlinkPrice);
-const [rootSolana] = solanaWitness.computeRootAndKeyV2(solanaPrice);
-const [rootEthereum] = ethereumWitness.computeRootAndKeyV2(ethereumPrice);
-const [rootBitcoin] = bitcoinWitness.computeRootAndKeyV2(bitcoinPrice);
-const [rootAvalanche] = avalanceWitness.computeRootAndKeyV2(avalanchePrice);
-const [rootCardano] = cardanoWitness.computeRootAndKeyV2(cardanoPrice);
-const [rootRipple] = rippleWitness.computeRootAndKeyV2(ripplePrice);
-const [rootDogecoin] = dogeWitness.computeRootAndKeyV2(dogePrice);
-const [rootPolygoon] = polygonWitness.computeRootAndKeyV2(polygonPrice);
+// const [rootChainlink] = chainlinkWitness.computeRootAndKeyV2(chainlinkPrice);
+// const [rootSolana] = solanaWitness.computeRootAndKeyV2(solanaPrice);
+// const [rootEthereum] = ethereumWitness.computeRootAndKeyV2(ethereumPrice);
+// const [rootBitcoin] = bitcoinWitness.computeRootAndKeyV2(bitcoinPrice);
+// const [rootAvalanche] = avalanceWitness.computeRootAndKeyV2(avalanchePrice);
+// const [rootCardano] = cardanoWitness.computeRootAndKeyV2(cardanoPrice);
+// const [rootRipple] = rippleWitness.computeRootAndKeyV2(ripplePrice);
+// const [rootDogecoin] = dogeWitness.computeRootAndKeyV2(dogePrice);
+const [rootPolygon] = polygonWitness.computeRootAndKeyV2(polygonPrice);
 
-console.log('\nROOTS ->');
-console.log(latestCommitment.toString());
-console.log(rootMina.toString());
-console.log(rootChainlink.toString());
-console.log(rootSolana.toString());
-console.log(rootEthereum.toString());
-console.log(rootBitcoin.toString());
-console.log(rootAvalanche.toString());
-console.log(rootCardano.toString());
-console.log(rootRipple.toString());
-console.log(rootDogecoin.toString());
-console.log(rootPolygoon.toString());
+console.log('\nKEYS ->');
+console.log(minaKey.toString());
+console.log(bitcoinKey.toString());
+console.log(chainlinkKey.toString());
+console.log(solanaKey.toString());
+console.log(ethereumKey.toString());
+console.log(cardanoKey.toString());
+console.log(avalancheKey.toString());
+console.log(rippleKey.toString());
+console.log(dogeKey.toString());
+console.log(polygonKey.toString());
 
 console.log('\nVALUES ->');
 console.log(Map.get(minaKey).toBigInt());
@@ -181,3 +171,9 @@ console.log(Map.get(cardanoKey).toBigInt());
 console.log(Map.get(rippleKey).toBigInt());
 console.log(Map.get(dogeKey).toBigInt());
 console.log(Map.get(polygonKey).toBigInt());
+
+console.log('\nCOMMON ROOT ->');
+
+if (latestCommitment.toString() == rootMina.toString())
+  console.log(rootPolygon.toString(), '\n');
+else console.log('ERR : Root mismatch.\n');

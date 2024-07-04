@@ -23,7 +23,10 @@ export const offchainState = OffchainState({
 export class PriceProof extends offchainState.Proof {}
 export class IpfsCID extends MultiPackedStringFactory(2) {}
 
-export class PricesArray extends Struct({ array: Provable.Array(Field, 10) }) {}
+export class PricesArray extends Struct({
+  prices: Provable.Array(Field, 10),
+  // aggregationProofs: Provable.Array(SelfProof<Prices, Field>, 10),
+}) {}
 
 export class Doot extends SmartContract {
   @state(Field) commitment = State<Field>();
@@ -61,7 +64,7 @@ export class Doot extends SmartContract {
       CircuitString.fromString('Mina').hash(),
       {
         from: lastPriceOption,
-        to: pricesArray.array[0],
+        to: pricesArray.prices[0],
       }
     );
     lastPriceOption = await offchainState.fields.prices.get(
@@ -71,7 +74,7 @@ export class Doot extends SmartContract {
       CircuitString.fromString('Bitcoin').hash(),
       {
         from: lastPriceOption,
-        to: pricesArray.array[1],
+        to: pricesArray.prices[1],
       }
     );
     lastPriceOption = await offchainState.fields.prices.get(
@@ -81,7 +84,7 @@ export class Doot extends SmartContract {
       CircuitString.fromString('Ethereum').hash(),
       {
         from: lastPriceOption,
-        to: pricesArray.array[2],
+        to: pricesArray.prices[2],
       }
     );
     lastPriceOption = await offchainState.fields.prices.get(
@@ -91,7 +94,7 @@ export class Doot extends SmartContract {
       CircuitString.fromString('Solana').hash(),
       {
         from: lastPriceOption,
-        to: pricesArray.array[3],
+        to: pricesArray.prices[3],
       }
     );
     lastPriceOption = await offchainState.fields.prices.get(
@@ -101,7 +104,7 @@ export class Doot extends SmartContract {
       CircuitString.fromString('Ripple').hash(),
       {
         from: lastPriceOption,
-        to: pricesArray.array[4],
+        to: pricesArray.prices[4],
       }
     );
     lastPriceOption = await offchainState.fields.prices.get(
@@ -111,7 +114,7 @@ export class Doot extends SmartContract {
       CircuitString.fromString('Cardano').hash(),
       {
         from: lastPriceOption,
-        to: pricesArray.array[5],
+        to: pricesArray.prices[5],
       }
     );
     lastPriceOption = await offchainState.fields.prices.get(
@@ -121,7 +124,7 @@ export class Doot extends SmartContract {
       CircuitString.fromString('Avalanche').hash(),
       {
         from: lastPriceOption,
-        to: pricesArray.array[6],
+        to: pricesArray.prices[6],
       }
     );
     lastPriceOption = await offchainState.fields.prices.get(
@@ -131,7 +134,7 @@ export class Doot extends SmartContract {
       CircuitString.fromString('Polygon').hash(),
       {
         from: lastPriceOption,
-        to: pricesArray.array[7],
+        to: pricesArray.prices[7],
       }
     );
     lastPriceOption = await offchainState.fields.prices.get(
@@ -141,7 +144,7 @@ export class Doot extends SmartContract {
       CircuitString.fromString('Chainlink').hash(),
       {
         from: lastPriceOption,
-        to: pricesArray.array[8],
+        to: pricesArray.prices[8],
       }
     );
     lastPriceOption = await offchainState.fields.prices.get(
@@ -151,7 +154,7 @@ export class Doot extends SmartContract {
       CircuitString.fromString('Dogecoin').hash(),
       {
         from: lastPriceOption,
-        to: pricesArray.array[9],
+        to: pricesArray.prices[9],
       }
     );
 
@@ -179,7 +182,7 @@ export class Doot extends SmartContract {
       CircuitString.fromString('Mina').hash(),
       {
         from: lastPriceOption,
-        to: pricesArray.array[0],
+        to: pricesArray.prices[0],
       }
     );
     lastPriceOption = await offchainState.fields.prices.get(
@@ -189,7 +192,7 @@ export class Doot extends SmartContract {
       CircuitString.fromString('Bitcoin').hash(),
       {
         from: lastPriceOption,
-        to: pricesArray.array[1],
+        to: pricesArray.prices[1],
       }
     );
     lastPriceOption = await offchainState.fields.prices.get(
@@ -199,7 +202,7 @@ export class Doot extends SmartContract {
       CircuitString.fromString('Ethereum').hash(),
       {
         from: lastPriceOption,
-        to: pricesArray.array[2],
+        to: pricesArray.prices[2],
       }
     );
     lastPriceOption = await offchainState.fields.prices.get(
@@ -209,7 +212,7 @@ export class Doot extends SmartContract {
       CircuitString.fromString('Solana').hash(),
       {
         from: lastPriceOption,
-        to: pricesArray.array[3],
+        to: pricesArray.prices[3],
       }
     );
     lastPriceOption = await offchainState.fields.prices.get(
@@ -219,7 +222,7 @@ export class Doot extends SmartContract {
       CircuitString.fromString('Ripple').hash(),
       {
         from: lastPriceOption,
-        to: pricesArray.array[4],
+        to: pricesArray.prices[4],
       }
     );
     lastPriceOption = await offchainState.fields.prices.get(
@@ -229,7 +232,7 @@ export class Doot extends SmartContract {
       CircuitString.fromString('Cardano').hash(),
       {
         from: lastPriceOption,
-        to: pricesArray.array[5],
+        to: pricesArray.prices[5],
       }
     );
     lastPriceOption = await offchainState.fields.prices.get(
@@ -239,7 +242,7 @@ export class Doot extends SmartContract {
       CircuitString.fromString('Avalanche').hash(),
       {
         from: lastPriceOption,
-        to: pricesArray.array[6],
+        to: pricesArray.prices[6],
       }
     );
     lastPriceOption = await offchainState.fields.prices.get(
@@ -249,7 +252,7 @@ export class Doot extends SmartContract {
       CircuitString.fromString('Polygon').hash(),
       {
         from: lastPriceOption,
-        to: pricesArray.array[7],
+        to: pricesArray.prices[7],
       }
     );
     lastPriceOption = await offchainState.fields.prices.get(
@@ -259,7 +262,7 @@ export class Doot extends SmartContract {
       CircuitString.fromString('Chainlink').hash(),
       {
         from: lastPriceOption,
-        to: pricesArray.array[8],
+        to: pricesArray.prices[8],
       }
     );
     lastPriceOption = await offchainState.fields.prices.get(
@@ -269,7 +272,7 @@ export class Doot extends SmartContract {
       CircuitString.fromString('Dogecoin').hash(),
       {
         from: lastPriceOption,
-        to: pricesArray.array[9],
+        to: pricesArray.prices[9],
       }
     );
 
