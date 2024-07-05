@@ -5,44 +5,9 @@ import {
   UInt64,
   ZkProgram,
   SelfProof,
-  Proof,
-  state,
-  verify,
   SmartContract,
   method,
-  VerificationKey,
-  assert,
-  State,
 } from 'o1js';
-
-export class VerificationProof extends Proof<
-  PriceAggregationArray,
-  PriceAggregationResult
-> {}
-
-export class VerifyAggregationProof extends SmartContract {
-  @state(Field) AggregationProgramVKHash = State<Field>();
-
-  init() {
-    super.init();
-  }
-
-  @method async setVKHash(hash: Field) {
-    this.AggregationProgramVKHash.getAndRequireEquals();
-
-    this.AggregationProgramVKHash.set(hash);
-  }
-
-  @method async verifyAggregationProof(
-    proof: VerificationProof,
-    vk: VerificationKey
-  ) {
-    assert(vk.hash == this.AggregationProgramVKHash.get());
-
-    const results = await verify(proof, vk);
-    assert(results);
-  }
-}
 
 export class PriceAggregationArray extends Struct({
   pricesArray: Provable.Array(UInt64, 10),
@@ -50,8 +15,9 @@ export class PriceAggregationArray extends Struct({
 
 export class PriceAggregationResult extends Struct({
   aggregationResultPrice: UInt64,
-  timestamp: Field,
+  nonce: Field,
 }) {}
+
 export const AggregationProgram = ZkProgram({
   name: 'doot-prices-aggregation-program',
   publicInput: PriceAggregationArray,
@@ -64,7 +30,7 @@ export const AggregationProgram = ZkProgram({
       async method(publicInput: PriceAggregationArray) {
         return new PriceAggregationResult({
           aggregationResultPrice: UInt64.from(0),
-          timestamp: Field.from(0),
+          nonce: Field.from(0),
         });
       },
     },
@@ -89,13 +55,23 @@ export const AggregationProgram = ZkProgram({
         currentSum.add(publicInput.pricesArray[8]);
         currentSum.add(publicInput.pricesArray[9]);
 
-        const results: PriceAggregationResult = new PriceAggregationResult({
-          aggregationResultPrice: currentSum.div(10),
-          timestamp: Field.from(Date.now()),
-        });
-
-        return results;
+        privateInput.publicOutput.aggregationResultPrice = currentSum.div(10);
+        privateInput.publicOutput.nonce =
+          privateInput.publicOutput.nonce.add(1);
+        return privateInput.publicOutput;
       },
     },
   },
 });
+
+export class AggregationProof extends ZkProgram.Proof(AggregationProgram) {}
+
+export class VerifyAggregationProofGenerated extends SmartContract {
+  init() {
+    super.init();
+  }
+
+  @method async verifyAggregationProof(proof: AggregationProof) {
+    proof.verify();
+  }
+}

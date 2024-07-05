@@ -1,15 +1,15 @@
 import { Doot } from './Doot';
 import { Registry } from './Registry';
 import {
-  VerifyAggregationProof,
+  AggregationProof,
   AggregationProgram,
-  VerificationProof,
+  VerifyAggregationProofGenerated,
 } from './Aggregation';
 
 export {
   Doot,
   Registry,
-  VerifyAggregationProof,
-  VerificationProof,
+  VerifyAggregationProofGenerated,
   AggregationProgram,
+  AggregationProof,
 };
