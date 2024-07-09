@@ -1,37 +1,29 @@
 import {
-  Field,
+  UInt64,
   Provable,
   Struct,
-  UInt64,
   ZkProgram,
   SelfProof,
   SmartContract,
   method,
+  Field,
 } from 'o1js';
 
 export class PriceAggregationArray extends Struct({
   pricesArray: Provable.Array(UInt64, 10),
 }) {}
 
-export class PriceAggregationResult extends Struct({
-  aggregationResultPrice: UInt64,
-  nonce: Field,
-}) {}
-
 export const AggregationProgram = ZkProgram({
   name: 'doot-prices-aggregation-program',
   publicInput: PriceAggregationArray,
-  publicOutput: PriceAggregationResult,
+  publicOutput: UInt64,
 
   methods: {
     base: {
       privateInputs: [],
 
       async method(publicInput: PriceAggregationArray) {
-        return new PriceAggregationResult({
-          aggregationResultPrice: UInt64.from(0),
-          nonce: Field.from(0),
-        });
+        return UInt64.from(0);
       },
     },
     generateAggregationProof: {
@@ -39,26 +31,32 @@ export const AggregationProgram = ZkProgram({
 
       async method(
         publicInput: PriceAggregationArray,
-        privateInput: SelfProof<PriceAggregationArray, PriceAggregationResult>
+        privateInput: SelfProof<PriceAggregationArray, UInt64>
       ) {
         privateInput.verify();
 
-        let currentSum = UInt64.from(0);
-        currentSum.add(publicInput.pricesArray[0]);
-        currentSum.add(publicInput.pricesArray[1]);
-        currentSum.add(publicInput.pricesArray[2]);
-        currentSum.add(publicInput.pricesArray[3]);
-        currentSum.add(publicInput.pricesArray[4]);
-        currentSum.add(publicInput.pricesArray[5]);
-        currentSum.add(publicInput.pricesArray[6]);
-        currentSum.add(publicInput.pricesArray[7]);
-        currentSum.add(publicInput.pricesArray[8]);
-        currentSum.add(publicInput.pricesArray[9]);
+        return publicInput.pricesArray[0]
+          .add(publicInput.pricesArray[1])
+          .add(publicInput.pricesArray[2])
+          .add(publicInput.pricesArray[3])
+          .add(publicInput.pricesArray[4])
+          .add(publicInput.pricesArray[5])
+          .add(publicInput.pricesArray[6])
+          .add(publicInput.pricesArray[7])
+          .add(publicInput.pricesArray[8])
+          .add(publicInput.pricesArray[9])
+          .div(10);
+      },
+    },
+    reset: {
+      privateInputs: [SelfProof],
 
-        privateInput.publicOutput.aggregationResultPrice = currentSum.div(10);
-        privateInput.publicOutput.nonce =
-          privateInput.publicOutput.nonce.add(1);
-        return privateInput.publicOutput;
+      async method(
+        publicInput: PriceAggregationArray,
+        privateInput: SelfProof<PriceAggregationArray, UInt64>
+      ) {
+        privateInput.verify();
+        return UInt64.from(0);
       },
     },
   },
