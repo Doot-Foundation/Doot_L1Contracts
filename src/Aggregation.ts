@@ -6,7 +6,6 @@ import {
   SelfProof,
   SmartContract,
   method,
-  Field,
 } from 'o1js';
 
 export class PriceAggregationArray extends Struct({
@@ -46,17 +45,6 @@ export const AggregationProgram = ZkProgram({
           .add(publicInput.pricesArray[8])
           .add(publicInput.pricesArray[9])
           .div(10);
-      },
-    },
-    reset: {
-      privateInputs: [SelfProof],
-
-      async method(
-        publicInput: PriceAggregationArray,
-        privateInput: SelfProof<PriceAggregationArray, UInt64>
-      ) {
-        privateInput.verify();
-        return UInt64.from(0);
       },
     },
   },

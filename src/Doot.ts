@@ -12,7 +12,6 @@ import {
   Struct,
   Provable,
 } from 'o1js';
-
 import { MultiPackedStringFactory } from 'o1js-pack';
 
 const { OffchainState } = Experimental;
@@ -25,7 +24,6 @@ export class IpfsCID extends MultiPackedStringFactory(2) {}
 
 export class PricesArray extends Struct({
   prices: Provable.Array(Field, 10),
-  // aggregationProofs: Provable.Array(SelfProof<Prices, Field>, 10),
 }) {}
 
 export class Doot extends SmartContract {
@@ -67,6 +65,7 @@ export class Doot extends SmartContract {
         to: pricesArray.prices[0],
       }
     );
+
     lastPriceOption = await offchainState.fields.prices.get(
       CircuitString.fromString('Bitcoin').hash()
     );
