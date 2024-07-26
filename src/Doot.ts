@@ -30,12 +30,12 @@ export class Doot extends SmartContract {
   @state(Field) commitment = State<Field>();
   @state(Field) secret = State<Field>();
   @state(IpfsCID) ipfsCID = State<IpfsCID>();
-  @state(PublicKey) oraclePublicKey = State<PublicKey>();
+  @state(PublicKey) deployerPublicKey = State<PublicKey>();
   @state(OffchainState.Commitments) offchainState = offchainState.commitments();
 
   init() {
     super.init();
-    this.oraclePublicKey.set(this.sender.getUnconstrained());
+    this.deployerPublicKey.set(this.sender.getUnconstrained());
   }
 
   @method async initBase(
@@ -44,7 +44,7 @@ export class Doot extends SmartContract {
     pricesArray: PricesArray,
     updatedSecret: Field
   ) {
-    this.oraclePublicKey.getAndRequireEquals();
+    this.deployerPublicKey.getAndRequireEquals();
     this.secret.getAndRequireEquals();
     this.commitment.getAndRequireEquals();
     this.ipfsCID.getAndRequireEquals();
@@ -166,7 +166,7 @@ export class Doot extends SmartContract {
     pricesArray: PricesArray,
     secret: Field
   ) {
-    this.oraclePublicKey.getAndRequireEquals();
+    this.deployerPublicKey.getAndRequireEquals();
     this.secret.getAndRequireEquals();
     this.commitment.getAndRequireEquals();
     this.ipfsCID.getAndRequireEquals();
@@ -289,8 +289,8 @@ export class Doot extends SmartContract {
   }
 
   @method async verify(signature: Signature, Price: Field) {
-    this.oraclePublicKey.getAndRequireEquals();
-    const validSignature = signature.verify(this.oraclePublicKey.get(), [
+    this.deployerPublicKey.getAndRequireEquals();
+    const validSignature = signature.verify(this.deployerPublicKey.get(), [
       Price,
     ]);
     validSignature.assertTrue();

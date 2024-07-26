@@ -63,7 +63,7 @@ describe('Doot.js', () => {
     });
 
     it(`Should set inital oracle to ${oracle}`, async () => {
-      const onChainOracle = dootZkApp.oraclePublicKey.get();
+      const onChainOracle = dootZkApp.deployerPublicKey.get();
       const expected = oracle;
 
       expect(onChainOracle).toEqual(expected);
