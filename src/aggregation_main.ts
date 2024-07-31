@@ -157,7 +157,7 @@ console.log('Step Proof10 Generated.');
 proof10 satisfies AggregationProof10;
 console.log('Step Proof10 Sanity Check.');
 proof10 = await testJsonRoundtrip(AggregationProof10, proof10);
-const valid10 = await verify(proof10.toJSON(), vk100);
+const valid10 = await verify(proof10.toJSON(), vk10);
 if (!valid10) {
   console.error('\nERR! VALID 10 FAILED.\n');
   process.exit(1);
