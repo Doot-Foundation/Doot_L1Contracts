@@ -116,7 +116,7 @@ proof100 satisfies AggregationProof100;
 proof100 = await testJsonRoundtrip(AggregationProof100, proof100);
 await verify(proof100.toJSON(), vk100);
 
-console.log('Completed base proof and validation.');
+console.log('\nCompleted base proof and validation.');
 
 const [values10, bigValues10] = generateRandomPriceArray(66665248770934n, 10);
 const [values100, bigValues100] = generateRandomPriceArray(
@@ -144,7 +144,7 @@ let expected100 =
     0n
   ) / 100n;
 
-console.log('Produced prices array 10 & 100 successfully. \n');
+console.log('\nProduced prices array 10 & 100 successfully. \n');
 
 // STEP CASE FOR PROOF 10
 const start10 = performance.now();
