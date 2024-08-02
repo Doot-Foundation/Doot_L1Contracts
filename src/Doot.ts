@@ -14,7 +14,7 @@ import {
 } from 'o1js';
 import { MultiPackedStringFactory } from 'o1js-pack';
 
-const { OffchainState } = Experimental;
+const { OffchainState, OffchainStateCommitments } = Experimental;
 
 export const offchainState = OffchainState({
   prices: OffchainState.Map(Field, Field),
@@ -31,7 +31,9 @@ export class Doot extends SmartContract {
   @state(Field) secret = State<Field>();
   @state(IpfsCID) ipfsCID = State<IpfsCID>();
   @state(PublicKey) deployerPublicKey = State<PublicKey>();
-  @state(OffchainState.Commitments) offchainState = offchainState.commitments();
+  @state(OffchainStateCommitments) offchainState = State(
+    OffchainStateCommitments.empty()
+  );
 
   init() {
     super.init();

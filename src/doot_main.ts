@@ -61,12 +61,8 @@ offchainState.setContractInstance(dootZkApp);
 
 console.log('\nDeploying Doot...');
 
-// if (doProofs) {
 await offchainState.compile();
-
-const { verificationKey } = await Doot.compile();
-console.log(verificationKey);
-// }
+await Doot.compile();
 
 const deployTxn = await Mina.transaction(oracle, async () => {
   AccountUpdate.fundNewAccount(oracle);
