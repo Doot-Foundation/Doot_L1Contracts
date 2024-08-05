@@ -8,24 +8,25 @@ import {
   method,
 } from 'o1js';
 
-export class PriceAggregationArray10 extends Struct({
-  pricesArray: Provable.Array(UInt64, 10),
+export class PriceAggregationArray20 extends Struct({
+  pricesArray: Provable.Array(UInt64, 20),
+  count: UInt64,
 }) {}
 export class PriceAggregationArray100 extends Struct({
   pricesArray: Provable.Array(UInt64, 100),
   count: UInt64,
 }) {}
 
-export const AggregationProgram10 = ZkProgram({
+export const AggregationProgram20 = ZkProgram({
   name: 'doot-prices-aggregation-program',
-  publicInput: PriceAggregationArray10,
+  publicInput: PriceAggregationArray20,
   publicOutput: UInt64,
 
   methods: {
     base: {
       privateInputs: [],
 
-      async method(publicInput: PriceAggregationArray10) {
+      async method(publicInput: PriceAggregationArray20) {
         return UInt64.from(0);
       },
     },
@@ -33,8 +34,8 @@ export const AggregationProgram10 = ZkProgram({
       privateInputs: [SelfProof],
 
       async method(
-        publicInput: PriceAggregationArray10,
-        privateInput: SelfProof<PriceAggregationArray10, UInt64>
+        publicInput: PriceAggregationArray20,
+        privateInput: SelfProof<PriceAggregationArray20, UInt64>
       ) {
         privateInput.verify();
 
@@ -48,7 +49,17 @@ export const AggregationProgram10 = ZkProgram({
           .add(publicInput.pricesArray[7])
           .add(publicInput.pricesArray[8])
           .add(publicInput.pricesArray[9])
-          .div(10);
+          .add(publicInput.pricesArray[10])
+          .add(publicInput.pricesArray[11])
+          .add(publicInput.pricesArray[12])
+          .add(publicInput.pricesArray[13])
+          .add(publicInput.pricesArray[14])
+          .add(publicInput.pricesArray[15])
+          .add(publicInput.pricesArray[16])
+          .add(publicInput.pricesArray[17])
+          .add(publicInput.pricesArray[18])
+          .add(publicInput.pricesArray[19])
+          .div(publicInput.count);
       },
     },
   },
@@ -182,7 +193,7 @@ export const AggregationProgram100 = ZkProgram({
   },
 });
 
-export class AggregationProof10 extends ZkProgram.Proof(AggregationProgram10) {}
+export class AggregationProof20 extends ZkProgram.Proof(AggregationProgram20) {}
 export class AggregationProof100 extends ZkProgram.Proof(
   AggregationProgram100
 ) {}
@@ -192,7 +203,7 @@ export class VerifyAggregationProofGenerated extends SmartContract {
     super.init();
   }
 
-  @method async verifyAggregationProof10(proof: AggregationProof10) {
+  @method async verifyAggregationProof20(proof: AggregationProof20) {
     proof.verify();
   }
   @method async verifyAggregationProof100(proof: AggregationProof100) {

@@ -9,9 +9,9 @@ import {
 } from 'o1js';
 
 import {
-  AggregationProgram10,
-  AggregationProof10,
-  PriceAggregationArray10,
+  AggregationProgram20,
+  AggregationProof20,
+  PriceAggregationArray20,
   AggregationProgram100,
   AggregationProof100,
   PriceAggregationArray100,
@@ -23,13 +23,6 @@ function testJsonRoundtrip<
   MyProof extends { fromJSON(jsonProof: JsonProof): Promise<P> }
 >(MyProof: MyProof, proof: P) {
   let jsonProof = proof.toJSON();
-  console.log(
-    'JSON proof :',
-    JSON.stringify({
-      ...jsonProof,
-      proof: jsonProof.proof.slice(0, 10) + '....',
-    })
-  );
   return MyProof.fromJSON(jsonProof);
 }
 
@@ -74,7 +67,7 @@ const zkappKey = PrivateKey.random();
 const zkapp = zkappKey.toPublicKey();
 
 // COMPILE
-const { verificationKey: vk10 } = await AggregationProgram10.compile();
+const { verificationKey: vk20 } = await AggregationProgram20.compile();
 const { verificationKey: vk100 } = await AggregationProgram100.compile();
 await VerifyAggregationProofGenerated.compile();
 
@@ -92,9 +85,10 @@ console.log('\n===== Completed Setup =====\n');
 
 // START GENERATING ZKPROGRAM PROOFS
 
-const dummy10 = generateDummy(10);
-const dummyInput10: PriceAggregationArray10 = new PriceAggregationArray10({
-  pricesArray: dummy10,
+const dummy20 = generateDummy(20);
+const dummyInput20: PriceAggregationArray20 = new PriceAggregationArray20({
+  pricesArray: dummy20,
+  count: UInt64.from(20),
 });
 const dummy100 = generateDummy(100);
 const dummyInput100: PriceAggregationArray100 = new PriceAggregationArray100({
@@ -105,10 +99,10 @@ const dummyInput100: PriceAggregationArray100 = new PriceAggregationArray100({
 console.log('Generated dummy input.');
 
 // BASE CASE 10
-let proof10 = await AggregationProgram10.base(dummyInput10);
-proof10 satisfies AggregationProof10;
-proof10 = await testJsonRoundtrip(AggregationProof10, proof10);
-await verify(proof10.toJSON(), vk10);
+let proof20 = await AggregationProgram20.base(dummyInput20);
+proof20 satisfies AggregationProof20;
+proof20 = await testJsonRoundtrip(AggregationProof20, proof20);
+await verify(proof20.toJSON(), vk20);
 
 // BASE CASE 100
 let proof100 = await AggregationProgram100.base(dummyInput100);
@@ -118,59 +112,67 @@ await verify(proof100.toJSON(), vk100);
 
 console.log('\nCompleted base proof and validation.');
 
-const [values10, bigValues10] = generateRandomPriceArray(66665248770934n, 10);
+const [values20, bigValues20] = generateRandomPriceArray(66665248770934n, 20);
 const [values100, bigValues100] = generateRandomPriceArray(
   529999487170934n,
   100
 );
 // const [values1000, bigValues1000] = generateRandomPriceArray(5248770934n, 1000);
 
-const prices10: PriceAggregationArray10 = new PriceAggregationArray10({
-  pricesArray: values10,
+const prices20: PriceAggregationArray20 = new PriceAggregationArray20({
+  pricesArray: values20,
+  count: UInt64.from(20),
 });
 const prices100: PriceAggregationArray100 = new PriceAggregationArray100({
   pricesArray: values100,
   count: UInt64.from(100),
 });
 
-let expected10 =
-  bigValues10.reduce(
+let expected20 =
+  bigValues20.reduce(
     (accumulator: bigint, currentValue) => accumulator + currentValue,
     0n
-  ) / 10n;
+  ) / 20n;
 let expected100 =
   bigValues100.reduce(
     (accumulator: bigint, currentValue) => accumulator + currentValue,
     0n
   ) / 100n;
 
-console.log('\nProduced prices array 10 & 100 successfully. \n');
+console.log('\nProduced prices array 20 & 100 successfully. \n');
 
 // STEP CASE FOR PROOF 10
-const start10 = performance.now();
+const start20 = performance.now();
 
-proof10 = await AggregationProgram10.generateAggregationProof(
-  prices10,
-  proof10
+proof20 = await AggregationProgram20.generateAggregationProof(
+  prices20,
+  proof20
 );
-console.log('Step Proof10 Generated.');
-proof10 satisfies AggregationProof10;
-console.log('Step Proof10 Sanity Check.');
-proof10 = await testJsonRoundtrip(AggregationProof10, proof10);
-const valid10 = await verify(proof10.toJSON(), vk10);
-if (!valid10) {
-  console.error('\nERR! VALID 10 FAILED.\n');
+console.log('Step Proof20 Generated.');
+proof20 satisfies AggregationProof20;
+console.log('Step Proof20 Sanity Check.');
+proof20 = await testJsonRoundtrip(AggregationProof20, proof20);
+
+const jsonProof20 = proof20.toJSON();
+const jsonString20 = jsonProof20.proof;
+const byteArray20 = new TextEncoder().encode(jsonString20);
+const sizeInBytes20 = byteArray20.length;
+console.log('Total size of Proof20 :', sizeInBytes20 / 1000 + 'KB');
+
+const valid20 = await verify(proof20.toJSON(), vk20);
+if (!valid20) {
+  console.error('\nERR! VALID 20 FAILED.\n');
   process.exit(1);
 }
 
-const end10 = performance.now();
+const end20 = performance.now();
 
 console.log(
   'Expected == Output :',
-  expected10.toString() == proof10.publicOutput.toString()
+  expected20.toString() == proof20.publicOutput.toString()
 );
 
-console.log('Completed step proof and validation for proof 10.\n');
+console.log('Completed step proof and validation for proof 20.\n');
 
 // STEP CASE FOR PROOF 100
 const start100 = performance.now();
@@ -183,6 +185,16 @@ console.log('Step Proof100 Generated.');
 proof100 satisfies AggregationProof100;
 console.log('Step Proof100 Sanity Check.');
 proof100 = await testJsonRoundtrip(AggregationProof100, proof100);
+
+const jsonProof100 = proof100.toJSON();
+// console.log(jsonProof20);
+// const generatedProof = await AggregationProof20.fromJSON(jsonProof20);
+// console.log(generatedProof, typeof generatedProof);
+const jsonString100 = JSON.stringify(jsonProof100);
+const byteArray100 = new TextEncoder().encode(jsonString100);
+const sizeInBytes100 = byteArray100.length;
+console.log('Total size of Proof100 :', sizeInBytes100 / 1000 + 'KB');
+
 const valid100 = await verify(proof100.toJSON(), vk100);
 if (!valid100) {
   console.error('\nERR! VALID 100 FAILED.\n');
@@ -198,20 +210,20 @@ console.log(
 
 console.log('Completed step proof and validation for proof 100.\n');
 
-console.log('Execution time for aggregating 10 :', end10 - start10, 'ms.');
+console.log('Execution time for aggregating 20 :', end20 - start20, 'ms.');
 console.log('Execution time for aggregating 100 :', end100 - start100, 'ms.');
 
 // VERIFY THE LATEST PROOF GENERATED USING THE VERIFY SMART CONTRACT
 // The call will fail if wrong proof and vk combination.
 await Mina.transaction(deployer, async () => {
-  await VerifyContract.verifyAggregationProof10(proof10);
+  await VerifyContract.verifyAggregationProof20(proof20);
 })
   .prove()
   .sign([deployerPK])
   .send();
 
 console.log(
-  '\nValidated the proof10 generated by ZkProgram inside the Smart Contract.'
+  '\nValidated the proof20 generated by ZkProgram inside the Smart Contract.'
 );
 await Mina.transaction(deployer, async () => {
   await VerifyContract.verifyAggregationProof100(proof100);
@@ -223,14 +235,5 @@ await Mina.transaction(deployer, async () => {
 console.log(
   'Validated the proof100 generated by ZkProgram inside the Smart Contract.'
 );
-// // expected = UInt64.from(0).toString();
-// // proof = await AggregationProgram10.reset(dummyInput, proof);
-// // console.log('Reset Proof Generated.');
-// // proof satisfies AggregationProof10;
-// // console.log('Reset Proof Sanity Check.');
-// // proof = await testJsonRoundtrip(AggregationProof10, proof);
-// // await verify(proof.toJSON(), verificationKey);
-
-// // console.log('Expected Output :', expected == proof.publicOutput.toString());
 
 console.log('\n============== Completed Successfully ==============\n');
