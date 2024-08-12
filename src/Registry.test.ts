@@ -94,6 +94,7 @@ describe('Registry', () => {
           updatedGithub,
           updatedIpfs,
           implementation,
+          deployer,
           secret
         );
       })

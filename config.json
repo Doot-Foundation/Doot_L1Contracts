@@ -1,13 +1,32 @@
 {
   "version": 1,
   "deployAliases": {
-    "devnet": {
+    "verify": {
       "networkId": "testnet",
       "url": "https://api.minascan.io/node/devnet/v1/graphql",
-      "keyPath": "keys/devnet.json",
-      "feepayerKeyPath": "/home/botvenom/.cache/zkapp-cli/keys/deployer.json",
-      "feepayerAlias": "deployer",
-      "fee": "0.1"
+      "keyPath": "keys/verify.json",
+      "feepayerKeyPath": "/home/botvenom/.cache/zkapp-cli/keys/bd3v_deployer.json",
+      "feepayerAlias": "bd3v_deployer",
+      "fee": "0.1",
+      "smartContract": "VerifyAggregationProofGenerated"
+    },
+    "doot": {
+      "networkId": "testnet",
+      "url": "https://api.minascan.io/node/devnet/v1/graphql",
+      "keyPath": "keys/doot.json",
+      "feepayerKeyPath": "/home/botvenom/.cache/zkapp-cli/keys/bd3v_deployer.json",
+      "feepayerAlias": "bd3v_deployer",
+      "fee": "0.1",
+      "smartContract": "Doot"
+    },
+    "registry": {
+      "networkId": "testnet",
+      "url": "https://api.minascan.io/node/devnet/v1/graphql",
+      "keyPath": "keys/registry.json",
+      "feepayerKeyPath": "/home/botvenom/.cache/zkapp-cli/keys/bd3v_deployer.json",
+      "feepayerAlias": "bd3v_deployer",
+      "fee": "0.1",
+      "smartContract": "Registry"
     }
   }
 }

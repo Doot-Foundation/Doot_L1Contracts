@@ -39,6 +39,7 @@ export class Registry extends SmartContract {
     updatedGithubLink: SourceCodeGithub,
     updatedIPFSLink: SourceCodeIPFS,
     updatedImplementation: PublicKey,
+    deployer: PublicKey,
     secret: Field
   ) {
     this.githubSourceLink.getAndRequireEquals();

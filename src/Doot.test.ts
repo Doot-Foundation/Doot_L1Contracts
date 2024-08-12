@@ -62,13 +62,6 @@ describe('Doot.js', () => {
       expect(onChainCommitment).toEqual(expected);
     });
 
-    it(`Should set inital oracle to ${oracle}`, async () => {
-      const onChainOracle = dootZkApp.deployerPublicKey.get();
-      const expected = oracle;
-
-      expect(onChainOracle).toEqual(expected);
-    });
-
     it(`Should set inital secret to 0`, async () => {
       const onChainSecret = dootZkApp.secret.get();
       const expected = Field.from(0);

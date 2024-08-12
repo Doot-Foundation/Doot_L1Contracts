@@ -1,4 +1,4 @@
-import { Doot, IpfsCID, PricesArray, offchainState } from './Doot.js';
+import { Doot, IpfsCID, PricesArray, offchainState } from '../Doot.js';
 
 import {
   Mina,
