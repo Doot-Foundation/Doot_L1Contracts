@@ -3,6 +3,8 @@ node_modules
 build
 coverage
 .env
+config.json
+doot_cache
 
 # Editor
 .vscode
