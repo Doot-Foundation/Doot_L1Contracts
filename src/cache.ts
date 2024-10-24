@@ -8,7 +8,8 @@ let zkappKey = PrivateKey.random();
 let zkappAddress = zkappKey.toPublicKey();
 
 let dootZkApp = new Doot(zkappAddress);
-offchainState.setContractInstance(dootZkApp);
+dootZkApp.offchainState.setContractInstance(dootZkApp);
+// offchainState.setContractInstance(dootZkApp);
 
 await offchainState.compile();
 await Doot.compile({ cache });

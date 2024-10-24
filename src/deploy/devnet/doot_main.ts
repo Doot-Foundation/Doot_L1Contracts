@@ -1,4 +1,9 @@
-import { Doot, IpfsCID, PricesArray, offchainState } from '../Doot.js';
+import {
+  Doot,
+  IpfsCID,
+  TokenInformationArray,
+  offchainState,
+} from '../../Doot.js';
 
 import {
   Mina,
@@ -57,7 +62,7 @@ Map.set(dogeKey, dogePrice);
 Map.set(polygonKey, polygonPrice);
 
 let dootZkApp = new Doot(zkappAddress);
-offchainState.setContractInstance(dootZkApp);
+dootZkApp.offchainState.setContractInstance(dootZkApp);
 
 console.log('\nDeploying Doot...');
 
@@ -82,7 +87,7 @@ const secret: Field = Field.random();
 console.log('\nSECRET :', secret.toString());
 
 // let toAdd = Provable.Array(Field, 10);
-let prices: PricesArray = new PricesArray({
+let tokensInfo: TokenInformationArray = new TokenInformationArray({
   prices: [
     minaPrice,
     bitcoinPrice,
@@ -95,25 +100,35 @@ let prices: PricesArray = new PricesArray({
     chainlinkPrice,
     dogePrice,
   ],
+  // tokens: [
+  //   minaKey,
+  //   bitcoinKey,
+  //   ethereumKey,
+  //   solanaKey,
+  //   rippleKey,
+  //   cardanoKey,
+  //   avalancheKey,
+  //   polygonKey,
+  //   chainlinkKey,
+  //   dogeKey,
+  // ],
 });
 
 await Mina.transaction(oracle, async () => {
-  await dootZkApp.initBase(latestCommitment, latestIPFSHash, prices, secret);
+  await dootZkApp.initBase(latestCommitment, latestIPFSHash, tokensInfo);
 })
   .prove()
   .sign([oraclePK])
   .send();
 
-let proof = await offchainState.createSettlementProof();
+let proof = await dootZkApp.offchainState.createSettlementProof();
 await Mina.transaction(oracle, () => dootZkApp.settle(proof))
   .prove()
   .sign([oraclePK])
   .send();
 
-let minaPriceOnChain = await dootZkApp.getPrice(
-  CircuitString.fromString('Mina')
-);
-console.log('\nOn-chain Mina Price :', minaPriceOnChain.toString());
+let allPrices = await dootZkApp.getPrices();
+console.log('\nOn-chain Mina Price :', allPrices.prices[0].toString());
 
 const onChainIpfsCID = dootZkApp.ipfsCID.get();
 const ipfsHash = IpfsCID.unpack(onChainIpfsCID.packed)
